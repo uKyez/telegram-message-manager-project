@@ -2,7 +2,7 @@ services:
   # Web Service (Laravel Application)
   - type: web
     name: telegram-message-manager
-    runtime: php
+    runtime: docker
     plan: free
     buildCommand: |
       composer install --optimize-autoloader --no-dev
@@ -42,7 +42,7 @@ services:
   # Cron Job (Message Scheduler)
   - type: cron
     name: telegram-scheduler
-    runtime: php
+    runtime: docker
     schedule: "* * * * *"
     buildCommand: composer install --optimize-autoloader --no-dev
     startCommand: php artisan telegram:send-scheduled
