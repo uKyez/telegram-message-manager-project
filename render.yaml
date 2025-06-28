@@ -12,7 +12,6 @@ services:
       php artisan view:cache
       php artisan migrate --force
       php artisan storage:link
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
       - key: APP_NAME
         value: Telegram Message Manager
@@ -45,7 +44,6 @@ services:
     runtime: docker
     schedule: "* * * * *"
     buildCommand: composer install --optimize-autoloader --no-dev
-    startCommand: php artisan telegram:send-scheduled
     envVars:
       - key: APP_ENV
         value: production
