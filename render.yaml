@@ -1,0 +1,74 @@
+services:
+  # Web Service (Laravel Application)
+  - type: web
+    name: telegram-message-manager
+    env: php
+    plan: free
+    buildCommand: |
+      composer install --optimize-autoloader --no-dev
+      php artisan key:generate --force
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+      php artisan migrate --force
+      php artisan storage:link
+    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_NAME
+        value: Telegram Message Manager
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: error
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
+    disk:
+      name: telegram-storage
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 1
+
+  # Cron Job (Message Scheduler)
+  - type: cron
+    name: telegram-scheduler
+    env: php
+    plan: free
+    schedule: "* * * * *"
+    buildCommand: composer install --optimize-autoloader --no-dev
+    startCommand: php artisan telegram:send-scheduled
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: LOG_LEVEL
+        value: error
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
+
+databases:
+  # PostgreSQL Database
+  - name: telegram-db
+    plan: free
+    databaseName: telegram_manager
+    user: telegram_user
+
