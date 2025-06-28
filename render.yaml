@@ -2,7 +2,7 @@ services:
   # Web Service (Laravel Application)
   - type: web
     name: telegram-message-manager
-    env: php
+    runtime: php
     plan: free
     buildCommand: |
       composer install --optimize-autoloader --no-dev
@@ -38,16 +38,11 @@ services:
         sync: false
       - key: TELEGRAM_BOT_USERNAME
         sync: false
-    disk:
-      name: telegram-storage
-      mountPath: /opt/render/project/src/storage
-      sizeGB: 1
 
   # Cron Job (Message Scheduler)
   - type: cron
     name: telegram-scheduler
-    env: php
-    plan: free
+    runtime: php
     schedule: "* * * * *"
     buildCommand: composer install --optimize-autoloader --no-dev
     startCommand: php artisan telegram:send-scheduled
